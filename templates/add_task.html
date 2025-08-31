@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Add New Task</h2>
+<form method="POST">
+  <label>Select Topic:</label><br>
+  <select name="topic_id">
+    {% for topic in topics %}
+      <option value="{{ topic.id }}">{{ topic.name }}</option>
+    {% endfor %}
+  </select><br><br>
+  <label>Task Name:</label><br>
+  <input type="text" name="task_name" required><br><br>
+  <label>Due Date (YYYY-MM-DD):</label><br>
+  <input type="date" name="due_date"><br><br>
+  <input type="submit" value="Add Task">
+</form>
+{% endblock %}
