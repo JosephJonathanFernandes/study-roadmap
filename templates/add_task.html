@@ -1,17 +1,48 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Add New Task</h2>
-<form method="POST">
-  <label>Select Topic:</label><br>
-  <select name="topic_id">
-    {% for topic in topics %}
-      <option value="{{ topic.id }}">{{ topic.name }}</option>
-    {% endfor %}
-  </select><br><br>
-  <label>Task Name:</label><br>
-  <input type="text" name="task_name" required><br><br>
-  <label>Due Date (YYYY-MM-DD):</label><br>
-  <input type="date" name="due_date"><br><br>
-  <input type="submit" value="Add Task">
-</form>
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white">
+        <h2 class="mb-0"><i class="fa-solid fa-plus"></i> Add New Task</h2>
+      </div>
+      <div class="card-body">
+        <form method="POST" id="addTaskForm" novalidate>
+          <div class="mb-3">
+            <label for="topic_id" class="form-label">Select Topic:</label>
+            <select class="form-select" id="topic_id" name="topic_id" required>
+              {% for topic in topics %}
+                <option value="{{ topic.id }}">{{ topic.name }}</option>
+              {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a topic.</div>
+          </div>
+          <div class="mb-3">
+            <label for="task_name" class="form-label">Task Name:</label>
+            <input type="text" class="form-control" id="task_name" name="task_name" required>
+            <div class="invalid-feedback">Task name is required.</div>
+          </div>
+          <div class="mb-3">
+            <label for="due_date" class="form-label">Due Date:</label>
+            <input type="date" class="form-control" id="due_date" name="due_date">
+          </div>
+          <button type="submit" class="btn btn-success"><i class="fa-solid fa-plus"></i> Add Task</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // Bootstrap form validation
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('addTaskForm');
+    form.addEventListener('submit', function(event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  });
+</script>
 {% endblock %}

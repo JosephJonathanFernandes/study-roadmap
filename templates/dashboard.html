@@ -1,22 +1,225 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Topics & Tasks</h2>
+<div class="row mb-4">
+  <div class="col d-flex justify-content-between align-items-center">
+    <h2 class="mb-3"><i class="fa-solid fa-list-check"></i> Topics & Tasks</h2>
+    <div>
+      <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addTaskModal" data-bs-toggle="tooltip" title="Add a new task"><i class="fa-solid fa-plus"></i> Add Task</button>
+      <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addTopicModal" data-bs-toggle="tooltip" title="Add a new topic"><i class="fa-solid fa-lightbulb"></i> Add Topic</button>
+    </div>
+  </div>
+</div>
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="fa-solid fa-chart-pie"></i> Task Status Analytics</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
 {% for topic in topics %}
-  <h3>{{ topic.name }}</h3>
-  <p>{{ topic.description }}</p>
-  <ul>
-  {% for task in topic.tasks %}
-    <li>
-      {{ task.task_name }} - Status: {{ task.status }}
-      <form style="display:inline" action="{{ url_for('main.update_task', task_id=task.id) }}" method="POST">
-        <select name="status" onchange="this.form.submit()">
-          <option value="pending" {% if task.status=='pending' %}selected{% endif %}>Pending</option>
-          <option value="in-progress" {% if task.status=='in-progress' %}selected{% endif %}>In-Progress</option>
-          <option value="completed" {% if task.status=='completed' %}selected{% endif %}>Completed</option>
-        </select>
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h4 class="mb-0"><i class="fa-solid fa-lightbulb"></i> {{ topic.name }}</h4>
+      <form method="POST" action="{{ url_for('main.delete_topic', topic_id=topic.id) }}" class="d-inline delete-topic-form" aria-label="Delete topic">
+        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteTopicModal{{ topic.id }}" aria-label="Delete topic" data-bs-toggle="tooltip" title="Delete topic"><i class="fa-solid fa-trash"></i></button>
       </form>
-    </li>
-  {% endfor %}
-  </ul>
+    </div>
+    <div class="card-body">
+      <p class="card-text">{{ topic.description }}</p>
+      <ul class="list-group list-group-flush">
+      {% for task in topic.tasks %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>
+            <i class="fa-solid fa-check-circle text-success" style="display: {% if task.status=='completed' %}inline{% else %}none{% endif %};"></i>
+            <i class="fa-solid fa-hourglass-half text-warning" style="display: {% if task.status=='in-progress' %}inline{% else %}none{% endif %};"></i>
+            <i class="fa-solid fa-circle text-secondary" style="display: {% if task.status=='pending' %}inline{% else %}none{% endif %};"></i>
+            <strong>{{ task.task_name }}</strong>
+          </span>
+          <form class="d-flex align-items-center" method="POST" action="{{ url_for('main.update_task', task_id=task.id) }}" aria-label="Update task status">
+            <select class="form-select form-select-sm me-2" name="status" onchange="this.form.submit()">
+              <option value="pending" {% if task.status=='pending' %}selected{% endif %}>Pending</option>
+              <option value="in-progress" {% if task.status=='in-progress' %}selected{% endif %}>In-Progress</option>
+              <option value="completed" {% if task.status=='completed' %}selected{% endif %}>Completed</option>
+            </select>
+            <span class="badge bg-secondary" data-bs-toggle="tooltip" title="Task status">{{ task.status|capitalize }}</span>
+          </form>
+          <form class="delete-task-form" method="POST" action="{{ url_for('main.delete_task', task_id=task.id) }}" aria-label="Delete task">
+            <button type="button" class="btn btn-outline-danger btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#confirmDeleteTaskModal{{ task.id }}" aria-label="Delete task" data-bs-toggle="tooltip" title="Delete task"><i class="fa-solid fa-trash"></i></button>
+          </form>
+          <!-- Confirm Delete Task Modal -->
+          <div class="modal fade" id="confirmDeleteTaskModal{{ task.id }}" tabindex="-1" aria-labelledby="confirmDeleteTaskLabel{{ task.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="confirmDeleteTaskLabel{{ task.id }}">Confirm Delete</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Are you sure you want to delete this task?
+                </div>
+                <div class="modal-footer">
+                  <form method="POST" action="{{ url_for('main.delete_task', task_id=task.id) }}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <!-- Confirm Delete Topic Modal -->
+  <div class="modal fade" id="confirmDeleteTopicModal{{ topic.id }}" tabindex="-1" aria-labelledby="confirmDeleteTopicLabel{{ topic.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmDeleteTopicLabel{{ topic.id }}">Confirm Delete</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this topic and all its tasks?
+        </div>
+        <div class="modal-footer">
+          <form method="POST" action="{{ url_for('main.delete_topic', topic_id=topic.id) }}">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endfor %}
+<!-- Add Task Modal -->
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="addTaskModalLabel"><i class="fa-solid fa-plus"></i> Add New Task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{{ url_for('main.add_task') }}" id="addTaskFormModal" novalidate>
+          <div class="mb-3">
+            <label for="topic_id_modal" class="form-label">Select Topic:</label>
+            <select class="form-select" id="topic_id_modal" name="topic_id" required>
+              {% for topic in topics %}
+                <option value="{{ topic.id }}">{{ topic.name }}</option>
+              {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a topic.</div>
+          </div>
+          <div class="mb-3">
+            <label for="task_name_modal" class="form-label">Task Name:</label>
+            <input type="text" class="form-control" id="task_name_modal" name="task_name" required>
+            <div class="invalid-feedback">Task name is required.</div>
+          </div>
+          <div class="mb-3">
+            <label for="due_date_modal" class="form-label">Due Date:</label>
+            <input type="date" class="form-control" id="due_date_modal" name="due_date">
+          </div>
+          <button type="submit" class="btn btn-success"><span class="spinner-border spinner-border-sm d-none" id="taskSpinner" role="status" aria-hidden="true"></span> <i class="fa-solid fa-plus"></i> Add Task</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Add Topic Modal -->
+<div class="modal fade" id="addTopicModal" tabindex="-1" aria-labelledby="addTopicModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="addTopicModalLabel"><i class="fa-solid fa-lightbulb"></i> Add New Topic</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{{ url_for('main.add_topic') }}" id="addTopicFormModal" novalidate>
+          <div class="mb-3">
+            <label for="name_modal" class="form-label">Topic Name:</label>
+            <input type="text" class="form-control" id="name_modal" name="name" required>
+            <div class="invalid-feedback">Topic name is required.</div>
+          </div>
+          <div class="mb-3">
+            <label for="description_modal" class="form-label">Description:</label>
+            <textarea class="form-control" id="description_modal" name="description" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-info"><span class="spinner-border spinner-border-sm d-none" id="topicSpinner" role="status" aria-hidden="true"></span> <i class="fa-solid fa-plus"></i> Add Topic</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('statusChart').getContext('2d');
+  const statusChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Pending', 'In-Progress', 'Completed'],
+      datasets: [{
+        data: [{{ status_counts['pending'] }}, {{ status_counts['in-progress'] }}, {{ status_counts['completed'] }}],
+        backgroundColor: [
+          'rgba(108, 117, 125, 0.7)', // Pending
+          'rgba(255, 193, 7, 0.7)',   // In-Progress
+          'rgba(40, 167, 69, 0.7)'    // Completed
+        ],
+        borderColor: [
+          'rgba(108, 117, 125, 1)',
+          'rgba(255, 193, 7, 1)',
+          'rgba(40, 167, 69, 1)'
+        ],
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+        },
+        title: {
+          display: true,
+          text: 'Task Completion Status'
+        }
+      }
+    }
+  });
+  // Modal form validation and spinner
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add Task Modal
+    var taskForm = document.getElementById('addTaskFormModal');
+    if (taskForm) {
+      taskForm.addEventListener('submit', function(event) {
+        if (!taskForm.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          document.getElementById('taskSpinner').classList.remove('d-none');
+        }
+        taskForm.classList.add('was-validated');
+      }, false);
+    }
+    // Add Topic Modal
+    var topicForm = document.getElementById('addTopicFormModal');
+    if (topicForm) {
+      topicForm.addEventListener('submit', function(event) {
+        if (!topicForm.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          document.getElementById('topicSpinner').classList.remove('d-none');
+        }
+        topicForm.classList.add('was-validated');
+      }, false);
+    }
+  });
+</script>
 {% endblock %}

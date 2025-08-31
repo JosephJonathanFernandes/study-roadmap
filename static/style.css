@@ -1,6 +1,79 @@
-body { font-family: Arial, sans-serif; margin: 20px; }
-header h1 { color: #2c3e50; }
-nav a { margin-right: 15px; text-decoration: none; color: #2980b9; }
-nav a:hover { text-decoration: underline; }
-hr { margin-bottom: 20px; }
-main { margin-top: 20px; }
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  background: #f8f9fa;
+}
+
+header h1 {
+  color: #2c3e50;
+}
+
+nav a {
+  margin-right: 15px;
+  text-decoration: none;
+  color: #2980b9;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+hr {
+  margin-bottom: 20px;
+}
+
+main {
+  margin-top: 20px;
+}
+
+.card {
+  transition: box-shadow 0.3s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 24px rgba(44, 62, 80, 0.15);
+}
+
+.btn {
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+.navbar-brand,
+.nav-link {
+  transition: color 0.2s;
+}
+
+.navbar-brand:hover,
+.nav-link:hover {
+  color: #ffc107 !important;
+}
+
+.alert {
+  opacity: 0.95;
+  transition: opacity 0.5s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #2980b9;
+  box-shadow: 0 0 0 0.2rem rgba(41, 128, 185, 0.25);
+}
+
+/* Custom tooltip styling */
+.tooltip-inner {
+  background-color: #2980b9;
+  color: #fff;
+  font-size: 1rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 1rem;
+  }
+}

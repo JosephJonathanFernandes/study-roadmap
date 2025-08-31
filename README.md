@@ -1,18 +1,21 @@
-# Study Roadmap Tracker
+# Study Roadmap Flask
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue?logo=python)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-2.x-green?logo=flask)](https://flask.palletsprojects.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> A simple Flask web app to organize your study goals, track progress, and stay motivated.
+A modern Flask web app to track your study progress, manage tasks and topics, and visualize your learning journey.
 
 ---
 
 ## 🚀 Features
-- Add, edit, delete study tasks
-- Track progress by percentage
-- Mark tasks as completed
-- Clean, responsive UI (Bootstrap)
+- User authentication (register/login/logout)
+- Add, edit, delete study tasks and topics
+- Track progress with status (pending, in-progress, completed)
+- Visual analytics (pie chart)
+- Profile page with avatar upload and password change
+- Responsive, accessible UI (Bootstrap 5, FontAwesome)
+- Flash messages, tooltips, modals, and confirmation dialogs
 - Persistent storage (SQLite)
 
 ---
@@ -20,8 +23,11 @@
 ## 🛠️ Tech Stack
 - Python 3.11+
 - Flask
-- SQLite
-- Bootstrap
+- Flask-Login
+- SQLAlchemy
+- Bootstrap 5
+- FontAwesome
+- Chart.js
 
 ---
 
@@ -31,6 +37,8 @@ study-roadmap-flask/
 │── app.py              # Main Flask app
 │── models.py           # Database models
 │── routes.py           # App routes
+│── auth.py             # Authentication routes
+│── profile.py          # Profile routes
 │── requirements.txt    # Dependencies
 │── README.md           # Documentation
 │── .gitignore          # Git ignored files
@@ -38,14 +46,18 @@ study-roadmap-flask/
 ├── instance/
 │   └── database.db     # SQLite database
 │
+├── static/
+│   ├── style.css       # Custom styles
+│   └── avatars/        # User profile images
+│
 ├── templates/
 │   ├── base.html       # Common layout
 │   ├── dashboard.html  # Main dashboard
 │   ├── add_task.html   # Add task form
 │   ├── add_topic.html  # Add topic form
-│
-└── static/
-    └── style.css       # Custom styles
+│   ├── register.html   # Registration page
+│   ├── login.html      # Login page
+│   └── profile.html    # Profile page
 ```
 
 ---
@@ -60,10 +72,8 @@ study-roadmap-flask/
 2. **Create and activate a virtual environment:**
    ```bash
    python -m venv .venv
-   # On Windows
-   .venv\Scripts\activate
-   # On Linux/Mac
-   source .venv/bin/activate
+   .venv\Scripts\activate  # Windows
+   source .venv/bin/activate  # Linux/Mac
    ```
 3. **Install dependencies:**
    ```bash
@@ -71,8 +81,6 @@ study-roadmap-flask/
    ```
 4. **Run the app:**
    ```bash
-   flask run
-   # or
    python app.py
    ```
 5. **Open in browser:**
@@ -81,10 +89,11 @@ study-roadmap-flask/
 ---
 
 ## ✅ Future Enhancements
-- User authentication (login/register)
-- Progress analytics (charts/graphs)
 - Export study plan as PDF/CSV
 - Notifications/reminders
+- Progress analytics (charts/graphs)
+- Task deadlines and priorities
+- Multi-user support
 
 ---
 
